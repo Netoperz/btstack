@@ -1,11 +1,3 @@
-
-// *****************************************************************************
-//
-// test rfcomm query tests
-//
-// *****************************************************************************
-
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,13 +11,10 @@
 #include "hci_cmd.h"
 #include "btstack_util.h"
 #include "btstack_debug.h"
-
 #include "btstack_memory.h"
 #include "btstack_crypto.h"
 #include "hci.h"
 #include "hci_dump.h"
-#include "l2cap.h"
-
 
 void mock_init(void);
 void mock_simulate_hci_event(uint8_t * packet, uint16_t size);
@@ -118,10 +107,13 @@ TEST_GROUP(Crypto){
     }
 };
 
-TEST(Crypto, AES_CCM){
+TEST(Crypto, AES128){
     mock_init();
     btstack_crypto_aes128_encrypt(&crypto_aes128_request, zero, zero, ciphertext, crypto_done_callback, NULL);
     perform_crypto_operation();
+    uint8_t expected[16];
+    parse_hex(expected, "66e94bd4ef8a2c3b884cfa59ca342b2e");
+    CHECK_EQUAL_ARRAY(expected, ciphertext, 16);
 }
 
 int main (int argc, const char * argv[]){
